@@ -89,5 +89,11 @@ impl <S: Write> MonoLight<S> {
         dmx.send_dmx()?;
         Ok(())
     }
+
+    pub fn intensity(&mut self) -> Result<u8> {
+        let mut dmx = self.dmx.try_borrow_mut()?;
+
+        Ok(dmx.buf.get_channel(self.addr))
+    }
 }
 
