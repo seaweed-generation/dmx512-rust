@@ -38,13 +38,40 @@ impl <S: Write> WBRGLight<S> {
     pub fn set_rgbw(&mut self, colour: &RGBW) -> Result<()> {
         let mut dmx = self.dmx.try_borrow_mut()?;
 
-        dmx.buf.set_channel(self.addr, colour.w);
-        dmx.buf.set_channel(self.addr + 1, colour.b);
-        dmx.buf.set_channel(self.addr + 2, colour.r);
-        dmx.buf.set_channel(self.addr + 3, colour.g);
+        dmx.buf.set_channel(self.addr_red(), colour.r);
+        dmx.buf.set_channel(self.addr_green(), colour.g);
+        dmx.buf.set_channel(self.addr_blue(), colour.b);
+        dmx.buf.set_channel(self.addr_white(), colour.w);
 
         dmx.send_dmx()?;
         Ok(())
+    }
+
+    pub fn rgbw(&mut self) -> Result<RGBW> {
+        let mut dmx = self.dmx.try_borrow_mut()?;
+
+        Ok(RGBW {
+            r: dmx.buf.get_channel(self.addr_red()),
+            g: dmx.buf.get_channel(self.addr_green()),
+            b: dmx.buf.get_channel(self.addr_blue()),
+            w: dmx.buf.get_channel(self.addr_white()),
+        })
+    }
+
+    fn addr_red(&self) -> usize {
+        self.addr + 2
+    }
+
+    fn addr_green(&self) -> usize {
+        self.addr + 3
+    }
+
+    fn addr_blue(&self) -> usize {
+        self.addr + 1
+    }
+
+    fn addr_white(&self) -> usize {
+        self.addr
     }
 }
 
@@ -61,6 +88,12 @@ impl <S: Write> MonoLight<S> {
 
         dmx.send_dmx()?;
         Ok(())
+    }
+
+    pub fn intensity(&mut self) -> Result<u8> {
+        let mut dmx = self.dmx.try_borrow_mut()?;
+
+        Ok(dmx.buf.get_channel(self.addr))
     }
 }
 
