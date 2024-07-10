@@ -1,4 +1,4 @@
-use dmx512::{Dmx, WBRGLight, RGBW};
+use dmx512::{Dmx, WBRGLight};
 use ola::DmxBuffer;
 use std::{cell::RefCell, rc::Rc, thread::sleep, time::Duration};
 use anyhow::Result;
@@ -23,14 +23,12 @@ fn main() -> Result<()>{
     };
 
     loop {
-        let colour: RGBW = rng.gen::<[u8;4]>().into();
-        lights1_3.set_rgbw(&colour)?;
-        println!("Set lights for columns 1-3 to {:?}", colour);
+        lights1_3.set_rgbw(&rng.gen::<[u8; 4]>().into())?;
+        println!("Set lights for columns 1-3 to {:?}", lights1_3.rgbw());
         sleep(Duration::from_secs(1));
 
-        let colour: RGBW = rng.gen::<[u8;4]>().into();
-        lights4_6.set_rgbw(&colour)?;
-        println!("Set lights for columns 4-6 to {:?}", colour);
+        lights4_6.set_rgbw(&rng.gen::<[u8; 4]>().into())?;
+        println!("Set lights for columns 4-6 to {:?}", lights4_6.rgbw());
         sleep(Duration::from_secs(1));
     }
 }
